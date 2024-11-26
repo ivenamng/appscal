@@ -16,15 +16,25 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class LogInActivity extends AppCompatActivity {
     TextView tvDaftarSini;
     EditText etEmailLogin, etPassLogin;
     Button btLogin;
 
+    private DatabaseReference userDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+
+        userDb = FirebaseDatabase.getInstance().getReference("users");
 
         // inisialisasi elemen
         tvDaftarSini = findViewById(R.id.tvDaftarSini);
@@ -43,33 +53,38 @@ public class LogInActivity extends AppCompatActivity {
         });
 
         // button Log-In
-        btLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isValid()) {
-                    String email = etEmailLogin.getText().toString();
-                    String password = etPassLogin.getText().toString();
+        btLogin.setOnClickListener(view -> {
+            String email = etEmailLogin.getText().toString();
+            String password = etPassLogin.getText().toString();
 
-                    AppDatabase db = AppDatabase.getInstance(LogInActivity.this);
-                    UserDao userDao = db.userDao();
+            userDb.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            User user = snapshot.getValue(User.class);
+                            if (user.getPassword().equals(password)) {
+                                Toast.makeText(LogInActivity.this, "Login Berhasil!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(LogInActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
 
-                    new Thread(() -> {
-                        User user = userDao.login(email, password);
-                        if (user != null) {
-                            runOnUiThread(() -> showToast("Login successful! Welcome " + user.getUsername()));
-
-                            // TODO:  Tambah Handling Setelah sukses dibawah ini
-
-//                            Intent intent = new Intent(LogInActivity.this, MainActivity.class);
-//                            startActivity(intent);
-//                            finish();
-                        } else {
-                            runOnUiThread(() -> showToast("Invalid email or password."));
+                            } else {
+                                Toast.makeText(LogInActivity.this, "Password Salah!", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }).start();
+                    } else {
+                        Toast.makeText(LogInActivity.this, "User Tidak Ditemukan", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(LogInActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
+
     }
 
     private boolean isValid() {

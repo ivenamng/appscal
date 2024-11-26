@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "159475441420",
+    "project_id": "calapps-f5535",
+    "storage_bucket": "calapps-f5535.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159475441420:android:d6cd647d07a4af01157329",
+        "android_client_info": {
+          "package_name": "ibm.mobile.appscal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC58D4JyyzlAaxvSpyYooOUF3kjHy_UbA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

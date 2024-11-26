@@ -15,6 +15,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.Firebase;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -22,10 +26,14 @@ public class SignUpActivity extends AppCompatActivity {
     EditText etUserSignup, etEmailSignup, etPassSignup;
     Button btSignUp;
 
+    private DatabaseReference userDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        userDb = FirebaseDatabase.getInstance().getReference("users");
 
         // inisialisasi elemen
         tvMasukSini = findViewById(R.id.tvMasukSini);
@@ -45,36 +53,28 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
         // Button Sign-Up
-        btSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isValid()) {
-                    String username = etUserSignup.getText().toString();
-                    String email = etEmailSignup.getText().toString();
-                    String password = etPassSignup.getText().toString();
+        btSignUp.setOnClickListener(view -> {
+            if (isValid()) {
+                String username = etUserSignup.getText().toString();
+                String email = etEmailSignup.getText().toString();
+                String password = etPassSignup.getText().toString();
 
-                    AppDatabase db = AppDatabase.getInstance(SignUpActivity.this);
-                    UserDao userDao = db.userDao();
+                String id = userDb.push().getKey(); // Generate unique key
+                User user = new User(id, username, email, password);
 
-                    new Thread(() -> {
-                        if (userDao.checkIfEmailExists(email) > 0) {
-                            runOnUiThread(() -> showToast("Email already exists!"));
-                            return;
-                        }
-
-                        User user = new User(username, email, password);
-                        userDao.registerUser(user);
-                        runOnUiThread(() -> showToast("User registered successfully!"));
-
-                        // TODO: Tambah Handling Setelah sukses dibawah ini
-
-//                    Intent intent = new Intent(SignUpActivity.this, GenderActivity.class);
-//                    startActivity(intent);
-//                    finish();
-                    }).start();
-                }
+                userDb.child(id).setValue(user)
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Sign Up Berhasil!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(SignUpActivity.this, GenderActivity.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Sign Up Gagal: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
         });
+
     }
 
     private boolean isValid() {

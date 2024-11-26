@@ -5,10 +5,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -26,10 +33,38 @@ public class MainActivity extends AppCompatActivity {
     private int kaloriKonsumsiMalam = 0;
     private SharedPreferences sharedPreferences;
 
+    private TextView tvUser;
+    private DatabaseReference dbReference;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        tvUser = findViewById(R.id.tvUserMain);
+
+        // Mendapatkan reference ke node Firebase
+        dbReference = FirebaseDatabase.getInstance().getReference("users");
+
+        // Menambahkan listener untuk mendengarkan perubahan data
+        dbReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Data telah berubah, ambil nilai terbaru
+                String userName = dataSnapshot.child("username").getValue(String.class);
+
+                // Update UI dengan data terbaru
+                tvUser.setText(userName);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Menangani error jika terjadi
+                Log.w("MainActivity", "loadPost:onCancelled", databaseError.toException());
+            }
+        });
 
         // Ambil data
         Intent intentU = getIntent();
