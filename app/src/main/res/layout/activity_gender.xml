@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5EDED"
+    android:padding="5dp"
+    tools:context=".GenderActivity">
+
+    <ImageView
+        android:id="@+id/ivLogoGen"
+        android:layout_width="223dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="232dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/tvGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Pilih Jenis Kelamin Anda"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.511"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivLogoGen" />
+
+    <Button
+        android:id="@+id/btPria"
+        android:layout_width="100dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="65dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/button"
+        android:text="Pria"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvGender" />
+
+    <Button
+        android:id="@+id/btWanita"
+        android:layout_width="100dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="44dp"
+        android:background="@drawable/button"
+        android:text="Wanita"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.651"
+        app:layout_constraintStart_toEndOf="@+id/btPria"
+        app:layout_constraintTop_toBottomOf="@+id/tvGender" />
+</androidx.constraintlayout.widget.ConstraintLayout>
